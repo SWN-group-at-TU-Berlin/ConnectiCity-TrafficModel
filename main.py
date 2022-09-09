@@ -181,7 +181,9 @@ def main(areas: str, flooding: int, plot: bool, flow_per_commercial_area: int, f
     if plot:
         plot_result(graph, flooding)
 
-    click.echo([data["flow"] for _, _, data in graph.edges(data=True)])
+    result_flows = {frozenset({src, dst}): data["flow"] for src, dst, data in graph.edges(data=True)}
+    ordered_result = [result_flows[frozenset(street["areas"])] for street in STREETS_LIST]
+    click.echo(ordered_result)
 
 
 if __name__ == "__main__":

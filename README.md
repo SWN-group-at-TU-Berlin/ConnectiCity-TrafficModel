@@ -12,7 +12,7 @@ Run via command line to return a list with densities for all 13 streets:
 
 ```
 $ python main.py --areas 0,1,2,0,0,0,0,0,1,1,1,0 --flooding 0
-[70, 269, 147, 268, 86, 312, 53, 130, 150, 55, 117, 242, 118]
+[70, 269, 147, 130, 268, 150, 86, 53, 55, 312, 117, 242, 118]
 ```
 
 When running commands with `--plot` you will see the resulting graph:
