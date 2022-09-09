@@ -3,17 +3,24 @@
 Install in virtual environment via:
 
 ```
-python -m venv venv  			  # create venv
-. venv/bin/activate   			  # activate venv
-pip install -r requirements.txt	  # install dependencies
+python -m venv venv              # create venv
+. venv/bin/activate   	         # activate venv
+pip install -r requirements.txt  # install dependencies
 ```
 
-Run via command line:
+Run via command line to return a list with densities for all 13 streets:
 
 ```
 $ python main.py --areas 0,1,2,0,0,0,0,0,1,1,1,0 --flooding 0
 [70, 269, 147, 268, 86, 312, 53, 130, 150, 55, 117, 242, 118]
 ```
+
+When running commands with `--plot` you will see the resulting graph:
+
+```
+$ python main.py --areas 0,1,2,0,0,0,0,0,1,1,1,0 --flooding 0 --plot
+```
+![plot](./example_plot.png)
 
 Documentation via:
 
@@ -58,3 +65,4 @@ Options:
                                   roads when communication is enabled.
   --help                          Show this message and exit.
 ```
+
