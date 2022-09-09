@@ -149,13 +149,17 @@ def main(areas: str, flooding: int, plot: bool, flow_per_commercial_area: int, f
          public_transport_factor: float, weight_commercial_unpopulated: int, weight_commercial_populated: int,
          weight_residential_unpopulated: int, weight_residential_populated: int, flooded_street_density: float,
          flooded_street_avoidance: int):
+    # Prepare inputs
     area_states = [int(s) for s in areas.split(",")]
     assert len(area_states) == 12, f"Requires 12 area states, provided only {(len(area_states))}"
     areas = {area_name: area_state for area_name, area_state in zip(AREA_POSITIONS.keys(), area_states)}
 
+    # Create target weighting for current city state
     weighting = {area_name: create_weighting(area_name, area_state, weight_commercial_unpopulated,
                                              weight_commercial_populated, weight_residential_unpopulated,
                                              weight_residential_populated) for area_name, area_state in areas.items()}
+
+    # Create traffic flow models for each populated area
     flow_dicts = []
     for area_name, area_state in areas.items():
         if area_state == 0:
@@ -166,21 +170,22 @@ def main(areas: str, flooding: int, plot: bool, flow_per_commercial_area: int, f
                                              flow_per_residential_area=flow_per_residential_area,
                                              public_transport_factor=public_transport_factor,
                                              flooded_street_avoidance=flooded_street_avoidance))
+
+    # Merge traffic flows into one graph
     flows = merge_flow_dicts(flow_dicts)
     if flooding >= 1:
         for street in STREETS_LIST:
             if street["floodable"]:
                 flows[frozenset(street["areas"])] *= flooded_street_density
-
     graph = nx.Graph()
     for area_name, area_state in areas.items():
         graph.add_node(area_name, state=area_state)
     for areas, flow in flows.items():
         graph.add_edge(*areas, flow=round(flow))  # , label=street["name"]
 
+    # Return results
     if plot:
         plot_result(graph, flooding)
-
     result_flows = {frozenset({src, dst}): data["flow"] for src, dst, data in graph.edges(data=True)}
     ordered_result = [result_flows[frozenset(street["areas"])] for street in STREETS_LIST]
     click.echo(ordered_result)
@@ -188,20 +193,3 @@ def main(areas: str, flooding: int, plot: bool, flow_per_commercial_area: int, f
 
 if __name__ == "__main__":
     main()
-
-"""
-
-state:
-0
-1
-2
-    normal
-    flooded
-    communication
-
-areas: 0,1,2,3,4,3,2,3,4,3
-
-
-result: 0-1000
-
-"""
